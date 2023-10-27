@@ -1,0 +1,21 @@
+### Create Record
+GRPC grpc://localhost:8080/swandns.Records/Upsert
+
+{
+  "host": "foo.example.com",
+  "ip": "127.0.0.1"
+}
+
+### List Records
+
+GRPC  grpc://localhost:8080/swandns.Records/List
+
+{}
+
+### Delete Record
+
+GRPC  grpc://localhost:8080/swandns.Records/Delete
+
+{
+  "host": "example.com"
+}

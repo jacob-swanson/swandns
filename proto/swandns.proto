@@ -1,0 +1,51 @@
+syntax = "proto3";
+package swandns;
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingReply {
+  string message = 1;
+}
+
+service Ping {
+  rpc Ping (PingRequest) returns (PingReply);
+}
+
+message UpsertRecordRequest {
+  string name = 1;
+  string type = 2;
+  string value = 3;
+  uint32 ttl = 4;
+}
+
+message RecordReply {
+  string name = 1;
+  string type = 2;
+  string data = 3;
+  uint32 ttl = 4;
+  int64 created_at = 5;
+  int64 updated_at = 6;
+  bool healthy = 7;
+}
+
+message RecordsQueryRequest {
+
+}
+
+message EmptyReply {
+
+}
+
+message FindUniqueRecordRequest {
+  string name = 1;
+  string type = 2;
+}
+
+service Records {
+  rpc FindUnique (FindUniqueRecordRequest) returns (RecordReply);
+  rpc Upsert (UpsertRecordRequest) returns (RecordReply);
+  rpc List (RecordsQueryRequest) returns (stream RecordReply);
+  rpc Delete (FindUniqueRecordRequest) returns (EmptyReply);
+}

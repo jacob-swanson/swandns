@@ -1,0 +1,31 @@
+name: Build
+on: [push]
+
+jobs:
+  build:
+    runs-on: nixos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        run: nix develop --command cargo test
+      - name: Publish images
+        run: |
+          nix develop --command skopeo login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${REGISTRY_DOMAIN}
+
+          mkdir -p target/
+          nix build .#server-image
+          mv result target/swandns.tar.gz
+          nix build .#client-image
+          mv result target/swandns-update.tar.gz
+          
+          VERSION=$(nix develop --command cargo metadata --no-deps --format-version 1 | nix develop --command jq -r ".packages[0].version")
+          nix develop --command skopeo copy docker-archive:target/swandns.tar.gz docker://${REGISTRY_DOMAIN}/${REGISTRY_IMAGE_SERVER}:${VERSION}
+          nix develop --command skopeo copy docker-archive:target/swandns.tar.gz docker://${REGISTRY_DOMAIN}/${REGISTRY_IMAGE_SERVER}:latest
+          nix develop --command skopeo copy docker-archive:target/swandns-update.tar.gz docker://${REGISTRY_DOMAIN}/${REGISTRY_IMAGE_CLIENT}:${VERSION}
+          nix develop --command skopeo copy docker-archive:target/swandns-update.tar.gz docker://${REGISTRY_DOMAIN}/${REGISTRY_IMAGE_CLIENT}:latest
+        env:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          REGISTRY_DOMAIN: ${{ secrets.REGISTRY_DOMAIN }}
+          REGISTRY_IMAGE_SERVER: ${{ secrets.REGISTRY_IMAGE_SERVER }}
+          REGISTRY_IMAGE_CLIENT: ${{ secrets.REGISTRY_IMAGE_CLIENT }}
