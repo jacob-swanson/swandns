@@ -1,7 +1,11 @@
 name: Test
+on:
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
+  cargo-test:
     runs-on: nixos-latest
     steps:
       - uses: actions/checkout@v3

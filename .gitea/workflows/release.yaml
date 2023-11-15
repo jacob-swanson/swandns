@@ -1,7 +1,11 @@
 name: Release
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  push-images:
     runs-on: nixos-latest
     steps:
       - uses: actions/checkout@v3

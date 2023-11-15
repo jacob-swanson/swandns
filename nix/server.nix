@@ -44,6 +44,8 @@ in {
       description = "swandns";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
+      startLimitIntervalSec = 30;
+      startLimitBurst = 5;
       serviceConfig = {
         Type = "simple";
         User = cfg.user;
@@ -51,6 +53,7 @@ in {
         WorkingDirectory = cfg.dataDir;
         ExecStart = "${cfg.package}/bin/swandns --config ${configFile}";
         Restart = "on-failure";
+        RestartSec = 5;
         AmbientCapabilities = "CAP_NET_BIND_SERVICE";
       };
     };

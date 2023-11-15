@@ -38,10 +38,13 @@ in {
       description = "swandns-update";
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
+      startLimitIntervalSec = 30;
+      startLimitBurst = 5;
       serviceConfig = {
         Type = "oneshot";
         ExecStart = "${cfg.package}/bin/swandns-update --config ${configFile}";
         Restart = "on-failure";
+        RestartSec = 5;
       };
     };
 
