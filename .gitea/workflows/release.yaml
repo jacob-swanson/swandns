@@ -1,13 +1,10 @@
-name: Build
-on: [push]
+name: Release
 
 jobs:
   build:
     runs-on: nixos-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run tests
-        run: nix develop --command cargo test
       - name: Publish images
         run: |
           nix develop --command skopeo login --username ${REGISTRY_USERNAME} --password ${REGISTRY_PASSWORD} ${REGISTRY_DOMAIN}
