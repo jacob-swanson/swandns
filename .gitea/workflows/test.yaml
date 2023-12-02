@@ -6,7 +6,7 @@ on:
 
 jobs:
   cargo-test:
-    runs-on: nixos-latest
+    runs-on: native
     steps:
       - uses: actions/checkout@v3
       - name: Run tests
