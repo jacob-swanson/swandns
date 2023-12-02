@@ -2,12 +2,12 @@
 with lib;
 let
   swandns = pkgs.callPackage ../default.nix { };
-  cfg = config.service.swandns;
+  cfg = config.services.swandns;
   settingsFormat = pkgs.formats.yaml { };
   configFile = settingsFormat.generate "swandns-server.yaml"
     (cfg.settings // { data_dir = cfg.dataDir; });
 in {
-  options.service.swandns = with lib.types; {
+  options.services.swandns = with lib.types; {
     enable = mkEnableOption "Enable Swandns service";
 
     user = mkOption {

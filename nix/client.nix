@@ -2,11 +2,11 @@
 with lib;
 let
   swandns = pkgs.callPackage ../default.nix { };
-  cfg = config.service.swandns-update;
+  cfg = config.services.swandns-update;
   settingsFormat = pkgs.formats.yaml { };
   configFile = settingsFormat.generate "swandns-client.yaml" cfg.settings;
 in {
-  options.service.swandns-update = with lib.types; {
+  options.services.swandns-update = with lib.types; {
     enable = mkEnableOption "Enable Swandns Update service";
 
     user = mkOption {
