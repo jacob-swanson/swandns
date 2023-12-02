@@ -46,6 +46,11 @@
           '';
         };
 
+        nixosModules = {
+            client = import ./nix/client.nix;
+            server = import ./nix/server.nix;
+        };
+
         packages = {
           default = swandns;
           server-image = pkgs.dockerTools.buildLayeredImage {
