@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run tests
-        run: nix --extra-experimental-features nix-command develop --command cargo test
+        run: nix --extra-experimental-features nix-command --extra-experimental-features flakes develop --command cargo test
