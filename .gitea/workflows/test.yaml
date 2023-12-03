@@ -6,8 +6,8 @@ on:
 
 jobs:
   cargo-test:
-    runs-on: nixos-latest
+    runs-on: nixos-x86_64-linux
     steps:
       - uses: actions/checkout@v3
       - name: Run tests
-        run: nix develop --command cargo test
+        run: nix --extra-experimental-features nix-command --extra-experimental-features flakes develop --command cargo test
