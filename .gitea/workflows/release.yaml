@@ -6,7 +6,7 @@ on:
 
 jobs:
   push-images:
-    runs-on: nixos-latest
+    runs-on: nixos-x86_64-linux
     steps:
       - uses: actions/checkout@v3
       - name: Publish images
