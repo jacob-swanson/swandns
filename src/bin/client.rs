@@ -8,7 +8,7 @@ use std::time::Duration;
 use swandns::client::update_records;
 use swandns::util::configure_tracing;
 use swandns::{load_config, ClientConfig};
-use tokio_graceful_shutdown::{FutureExt, SubsystemHandle, Toplevel};
+use tokio_graceful_shutdown::{FutureExt, SubsystemHandle, Toplevel, SubsystemBuilder};
 use tracing::{debug, error, info};
 
 static CONF_NAME: &str = "client";
@@ -73,8 +73,9 @@ async fn main() -> Result<()> {
     let cfg: Arc<ClientConfig> = Arc::new(load_config(CONF_NAME, args.config).await?);
 
     if let Some(schedule) = args.schedule {
-        return Toplevel::new()
-            .start("Schedule", |h| update_in_loop(h, cfg, schedule))
+        return Toplevel::new(|s| async move {
+            s.start(SubsystemBuilder::new("Schedule", |s| update_in_loop(s, cfg, schedule)));
+        })
             .catch_signals()
             .handle_shutdown_requests(Duration::from_millis(1000))
             .await

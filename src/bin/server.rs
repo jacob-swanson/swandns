@@ -9,7 +9,7 @@ use swandns::record_repository::RecordRepository;
 use swandns::rpc_server::RpcServer;
 use swandns::util::{configure_tracing, get_socket_addr, migrate_database, open_database};
 use swandns::{load_config, ServerConfig};
-use tokio_graceful_shutdown::{FutureExt, SubsystemHandle, Toplevel};
+use tokio_graceful_shutdown::{FutureExt, SubsystemHandle, Toplevel, SubsystemBuilder};
 use tracing::debug;
 
 static CONF_NAME: &str = "server";
@@ -67,9 +67,10 @@ async fn main() -> Result<()> {
 
     migrate_database(conn.clone()).await?;
 
-    Toplevel::new()
-        .start("DnsServer", |h| start_dns_server(h, dns_cfg, dns_repo))
-        .start("RpcServer", |h| start_rpc_server(h, rpc_cfg, rpc_repo))
+    Toplevel::new(|s| async move {
+        s.start(SubsystemBuilder::new("DnsServer", |h| start_dns_server(h, dns_cfg, dns_repo)));
+        s.start(SubsystemBuilder::new("RpcServer", |h| start_rpc_server(h, rpc_cfg, rpc_repo)));
+    })
         .catch_signals()
         .handle_shutdown_requests(Duration::from_millis(1000))
         .await

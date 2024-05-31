@@ -1,8 +1,7 @@
 {
   description = "swandns";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-23.11";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:nixos/nixpkgs/release-24.05";
   };
   outputs = { self, nix, nixpkgs, ... }:
     let
@@ -16,7 +15,7 @@
           name = "swandns";
           nativeBuildInputs = with pkgs; [
             just
-            nixfmt
+            nixfmt-rfc-style
             statix
             protobuf
             cargo
