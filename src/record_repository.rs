@@ -1,6 +1,6 @@
 use crate::proto::{EmptyReply, FindUniqueRecordRequest, RecordReply, UpsertRecordRequest};
 use anyhow::Result;
-use rusqlite::params;
+use tokio_rusqlite::params;
 use std::sync::Arc;
 use time::{Duration, OffsetDateTime};
 use tokio_rusqlite::Connection;
@@ -26,7 +26,7 @@ FROM records
 WHERE name = ?1
   AND type = ?2"#,
                 )?;
-                stmt.query_row([name, r#type], |row| {
+                Ok(stmt.query_row([name, r#type], |row| {
                     let created_at: OffsetDateTime = row.get(4)?;
                     let updated_at: OffsetDateTime = row.get(5)?;
                     Ok(RecordReply {
@@ -38,10 +38,10 @@ WHERE name = ?1
                         updated_at: updated_at.unix_timestamp(),
                         healthy: true,
                     })
-                })
+                }))
             })
             .await?;
-        Ok(record)
+        Ok(record?)
     }
 
     pub async fn upsert(&self, request: UpsertRecordRequest) -> Result<RecordReply> {
@@ -106,7 +106,7 @@ ON CONFLICT(name, type)
                             healthy: OffsetDateTime::now_utc() - updated_at <= HEALTHY_AGE,
                         })
                     })?
-                    .collect::<Result<Vec<RecordReply>, rusqlite::Error>>()?;
+                    .collect::<Result<Vec<RecordReply>, _>>()?;
                 Ok(records)
             })
             .await?;
